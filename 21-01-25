@@ -21,3 +21,7 @@ class Solution:
                 tail.next = group_prev
             tail = group_curr
         return new_head
+
+
+exit()
+
