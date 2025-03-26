@@ -1,0 +1,44 @@
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end = False
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word):
+        node = self.root
+        for char in word:
+            if char not in node.children:
+                node.children[char] = TrieNode()
+            node = node.children[char]
+        node.is_end = True
+
+    def search(self, s, start, memo):
+        if start == len(s):  # Successfully reached the end
+            return True
+        if start in memo:  # Memoized result
+            return memo[start]
+
+        node = self.root
+        for end in range(start, len(s)):
+            char = s[end]
+            if char not in node.children:
+                break
+            node = node.children[char]
+            if node.is_end and self.search(s, end + 1, memo):  # Check next part
+                memo[start] = True
+                return True
+
+        memo[start] = False  # Store in memo
+        return False
+
+class Solution:
+    def wordBreak(self, s, dictionary):
+        trie = Trie()
+        for word in dictionary:
+            trie.insert(word)
+
+        return trie.search(s, 0, {})
+
