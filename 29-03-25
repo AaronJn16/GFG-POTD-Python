@@ -1,0 +1,25 @@
+class Solution:
+    def find(self, parent, x):
+        if parent[x] == x:
+            return x
+        parent[x] = self.find(parent, parent[x])  # Path compression
+        return parent[x]
+    
+    def jobSequencing(self, deadline, profit):
+        jobs = sorted(zip(profit, deadline), reverse=True)
+        max_deadline = max(deadline)
+        
+        # Parent array for DSU (Disjoint Set Union)
+        parent = list(range(max_deadline + 1))
+        
+        job_count = 0
+        max_profit = 0
+
+        for p, d in jobs:
+            available_slot = self.find(parent, min(d, max_deadline))
+            if available_slot > 0:
+                parent[available_slot] = self.find(parent, available_slot - 1)  # Union step
+                max_profit += p
+                job_count += 1
+
+        return [job_count, max_profit]
