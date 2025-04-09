@@ -1,0 +1,46 @@
+class Solution:
+    def articulationPoints(self, V, edges):
+        from collections import defaultdict
+
+        # Build adjacency list
+        graph = defaultdict(list)
+        for u, v in edges:
+            graph[u].append(v)
+            graph[v].append(u)
+
+        disc = [-1] * V  # Discovery time of nodes
+        low = [-1] * V   # Lowest time of nodes
+        parent = [-1] * V
+        ap = set()       # To store articulation points
+        time = [0]       # Shared reference for time counter
+
+        def dfs(u):
+            children = 0
+            disc[u] = low[u] = time[0]
+            time[0] += 1
+
+            for v in graph[u]:
+                if disc[v] == -1:
+                    parent[v] = u
+                    children += 1
+                    dfs(v)
+
+                    low[u] = min(low[u], low[v])
+
+                    # Condition 1: If u is root and has 2+ children
+                    if parent[u] == -1 and children > 1:
+                        ap.add(u)
+
+                    # Condition 2: If u is not root and low[v] >= disc[u]
+                    if parent[u] != -1 and low[v] >= disc[u]:
+                        ap.add(u)
+
+                elif v != parent[u]:  # Update low[u] for back edge
+                    low[u] = min(low[u], disc[v])
+
+        # Apply DFS for all components
+        for i in range(V):
+            if disc[i] == -1:
+                dfs(i)
+
+        return sorted(ap) if ap else [-1]
